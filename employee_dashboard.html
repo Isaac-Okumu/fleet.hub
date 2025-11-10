@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Employee Dashboard</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    body {
+      background: #f8f9fa;
+      font-family: 'Poppins', sans-serif;
+    }
+    .vehicle-card {
+      border: none;
+      border-radius: 10px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      transition: 0.3s ease;
+    }
+    .vehicle-card:hover {
+      transform: translateY(-5px);
+    }
+    .booked {
+      background-color: #6c757d !important;
+      border: none;
+      cursor: not-allowed;
+    }
+  </style>
+</head>
+<body>
+  <nav class="navbar navbar-dark bg-primary">
+    <div class="container-fluid">
+      <span class="navbar-brand">🚗 Fleet Management</span>
+      <button class="btn btn-light btn-sm" id="logoutBtn">Logout</button>
+    </div>
+  </nav>
+
+  <div class="container py-4">
+    <h4 class="mb-3">Available Vehicles</h4>
+
+    <div id="vehicleList" class="row g-4">
+      <!-- Vehicle Cards -->
+    </div>
+
+    <h4 class="mt-5 mb-3">My Bookings</h4>
+    <div id="myBookings">
+      <p class="text-muted mb-0">You have no current bookings.</p>
+    </div>
+  </div>
+
+  <script>
+    // Vehicle Data
+    const vehicles = [
+      { id: 1, name: "Toyota Hilux", plate: "KDA 456J", img: "https://images.unsplash.com/photo-1502877338535-766e1452684a" },
+      { id: 2, name: "Nissan Note", plate: "KDG 902L", img: "https://images.unsplash.com/photo-1570129477492-45c003edd2be" },
+      { id: 3, name: "Mazda CX-5", plate: "KCF 768M", img: "https://images.unsplash.com/photo-1552519507-da3b142c6e3d" },
+      { id: 4, name: "Toyota Prado", plate: "KDD 222R", img: "https://images.unsplash.com/photo-1517336714731-489689fd1ca8" },
+      { id: 5, name: "Mercedes-Benz", plate: "KCE 334P", img: "https://images.unsplash.com/photo-1503736334956-4c8f8e92946d" },
+      { id: 6, name: "Range Rover", plate: "KDJ 889B", img: "https://images.unsplash.com/photo-1503376780353-7e6692767b70" },
+    ];
+    const vehicleList = document.getElementById('vehicleList');
+    const myBookings = document.getElementById('myBookings');
+    let bookedVehicles = [];
+
+    // Render Vehicles
+    function renderVehicles() {
+      vehicleList.innerHTML = '';
+      vehicles.forEach(v => {
+        const isBooked = bookedVehicles.includes(v.id);
+        vehicleList.innerHTML += `
+          <div class="col-md-4 col-sm-6">
+            <div class="card vehicle-card">
+              <img src="${v.img}" class="card-img-top" alt="${v.name}">
+              <div class="card-body text-center">
+                <h5>${v.name}</h5>
+                <p class="text-muted mb-2">Plate: ${v.plate}</p>
+                <button class="btn ${isBooked ? 'btn-secondary booked' : 'btn-primary'} btn-sm w-100"
+                        onclick="bookVehicle(${v.id})"
+                        ${isBooked ? 'disabled' : ''}>
+                  ${isBooked ? 'Booked' : 'Book Now'}
+                </button>
+              </div>
+            </div>
+          </div>
+        `;
+      });
+    }
+
+    // Handle Booking
+    function bookVehicle(id) {
+      const vehicle = vehicles.find(v => v.id === id);
+      if (bookedVehicles.includes(id)) return;
+
+      bookedVehicles.push(id);
+      renderVehicles();
+      updateBookings();
+    }
+
+    // Update Bookings List
+    function updateBookings() {
+      if (bookedVehicles.length === 0) {
+        myBookings.innerHTML = '<p class="text-muted mb-0">You have no current bookings.</p>';
+        return;
+      }
+
+      myBookings.innerHTML = bookedVehicles.map(id => {
+        const v = vehicles.find(v => v.id === id);
+        return `
+          <div class="card mb-3">
+            <div class="card-body d-flex justify-content-between align-items-center">
+              <div>
+                <strong>${v.name}</strong><br>
+                <small class="text-muted">Plate: ${v.plate}</small>
+              </div>
+              <span class="badge bg-success">Booked</span>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    renderVehicles();
+  </script>
+</body>
+</html>
